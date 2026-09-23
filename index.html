@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="tj">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kabut Express - Хадамоти расонидан</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body>
+<!-- Модали интихоби забон -->
+<div id="language-modal" class="modal-overlay">
+    <div class="modal-card">
+        <div class="brand-logo">
+            <span class="blue-text">Kabut</span> <span class="orange-text">Express</span>
+        </div>
+        <h2 id="modal-welcome">Хуш омадед</h2>
+        <p class="sub-title" id="modal-select-lang">Забони худро интихоб кунед</p>
+        
+        <div class="lang-options">
+            <button type="button" onclick="closeLanguageModal('tj')">
+                <img src="https://flagcdn.com/w40/tj.png" class="modal-flag" alt="TJ"> <strong>Тоҷикӣ</strong>
+            </button>
+            <button type="button" onclick="closeLanguageModal('ru')">
+                <img src="https://flagcdn.com/w40/ru.png" class="modal-flag" alt="RU"> <strong>Русский</strong>
+            </button>
+            <button type="button" onclick="closeLanguageModal('en')">
+                <img src="https://flagcdn.com/w40/gb.png" class="modal-flag" alt="EN"> <strong>English</strong>
+            </button>
+        </div>
+    </div>
+</div>
+
+    <!-- Модали формаи автоматии заказ -->
+    <div id="order-modal" class="modal-overlay" style="display: none;">
+        <div class="order-card">
+            <button class="close-btn" onclick="closeOrderModal()">&times;</button>
+            <h2 id="order-title">Фармоиши нав</h2>
+            <form id="order-form" onsubmit="handleOrder(event)">
+                <div class="form-group">
+                    <label id="lbl-name" for="name">Ном ва насаб:</label>
+                    <input type="text" id="name" required placeholder="Масалан: Алиҷон Раҳимов">
+                </div>
+
+                <div class="form-group">
+                    <label id="lbl-phone" for="phone">Рақами телефон:</label>
+                    <input type="tel" id="phone" required placeholder="+992 900 00 0000">
+                </div>
+
+                <div class="form-group">
+                    <label id="lbl-address-from" for="address-from">Суроғаи гирифтан (Откуда):</label>
+                    <input type="text" id="address-from" required placeholder="Масалан: кӯч. Рӯдакӣ 15">
+                </div>
+
+                <div class="form-group">
+                    <label id="lbl-address-to" for="address-to">Суроғаи расонидан (Куда):</label>
+                    <input type="text" id="address-to" required placeholder="Масалан: кӯч. Борбад 45">
+                </div>
+
+                <div class="form-group">
+                    <label id="lbl-details" for="details">Навъи бор (Хӯрок, Техника, Либос...):</label>
+                    <textarea id="details" rows="3" placeholder="Маълумоти иловагӣ дар бораи фармоиш..."></textarea>
+                </div>
+
+                <button type="submit" class="btn-primary" id="btn-submit">Фиристодан ба курьер</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Шапкаи сайт -->
+    <header class="navbar">
+        <div class="logo">
+            <i class="fa-solid fa-motorcycle logo-icon"></i> 
+            <span class="blue-text">Kabut</span><span class="orange-text">Express</span>
+        </div>
+        
+        <div class="nav-right">
+            <!-- Блоки профили корбар -->
+            <div id="user-profile" style="display: none; align-items: center; gap: 10px;">
+                <img id="user-avatar" src="" alt="Avatar" style="width: 35px; height: 35px; border-radius: 50%;">
+                <span id="user-name" style="font-weight: bold; color: #fff;"></span>
+            </div>
+
+            <!-- Тугмаи Google Sign-In -->
+            <div id="g_id_onload"
+                data-client_id="YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com"
+                data-callback="handleCredentialResponse">
+            </div>
+            <div class="g_id_signin" data-type="standard"></div>
+
+            <!-- Интихоби забон бо парчами калон -->
+            <div class="lang-custom-box">
+                <img id="current-flag" src="https://flagcdn.com/w40/tj.png" alt="Flag" class="header-flag">
+                <select id="lang-switcher" onchange="changeLanguage(this.value)">
+                    <option value="tj">Тоҷикӣ</option>
+                    <option value="ru">Русский</option>
+                    <option value="en">English</option>
+                </select>
+            </div>
+        </div>
+    </header>
+
+    <!-- Баннери асосӣ -->
+    <section class="hero">
+        <div class="hero-container">
+            <div class="hero-text">
+                <h1 id="hero-title">Расонидани бехатар ва тез ба тамоми гӯшаҳо!</h1>
+                <p id="hero-desc">Фармоиши худро сабт кунед ва система онро ба таври автоматикӣ ба курьер мерасонад.</p>
+                <button onclick="openOrderModal()" class="btn-primary" id="btn-hero-order">Заказ кардан</button>
+            </div>
+            <div class="hero-image-box">
+                <img src="images/hero-banner.png" alt="Kabut Express Delivery" class="hero-banner-img">
+            </div>
+        </div>
+    </section>
+
+    <!-- Бахши хизматрасониҳо -->
+    <section class="services-section">
+        <h2 id="services-title">Чӣ чизҳоро расонида метавонем?</h2>
+        <div class="services-grid">
+            <div class="service-card">
+                <div class="service-icon"><i class="fa-solid fa-utensils"></i></div>
+                <h3 id="s1-title">1. Хӯрокворӣ</h3>
+                <p id="s1-desc">Хӯрок метавонед заказ карда, мо мерасонем.</p>
+            </div>
+
+            <div class="service-card">
+                <div class="service-icon"><i class="fa-solid fa-laptop"></i></div>
+                <h3 id="s2-title">2. Техникаҳо</h3>
+                <p id="s2-desc">Фармоиши ҳама гуна таҷҳизот ва техника.</p>
+            </div>
+
+            <div class="service-card">
+                <div class="service-icon"><i class="fa-solid fa-shirt"></i></div>
+                <h3 id="s3-title">3. Либос ва пойафзол</h3>
+                <p id="s3-desc">Либосу пойафзол ва дигар чизҳоро фармоиш диҳед, мо мерасонем.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Бахши Тамос ва Кӯмак -->
+    <section class="support-section">
+        <div class="support-container">
+            <div class="support-icon">
+                <i class="fa-solid fa-headset"></i>
+            </div>
+            <h2 id="support-title">Ба мушкилӣ дучор шудед?</h2>
+            <p id="support-desc">Агар ҳангоми сабти фармоиш ё расонидани бор ба ягон мушкилӣ дучор шудед, фавран бо маркази дастгирии Kabut Express дар тамос шавед.</p>
+            
+            <div class="contact-buttons">
+                <a href="tel:+992100126826" class="contact-btn phone-btn">
+                    <i class="fa-solid fa-phone"></i> <span id="btn-call-text">Занг: 100-126-826</span>
+                </a>
+                <a href="https://wa.me/992100126826" target="_blank" class="contact-btn wa-btn">
+                    <i class="fa-brands fa-whatsapp"></i> WhatsApp
+                </a>
+                <a href="https://t.me/kabut_express_admin" target="_blank" class="contact-btn tg-btn">
+                    <i class="fa-brands fa-telegram"></i> Telegram
+                </a>
+                <a href="https://instagram.com/kabut_express" target="_blank" class="contact-btn insta-btn">
+                    <i class="fa-brands fa-instagram"></i> Instagram
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p id="footer-text">&copy; 2026 Kabut Express. Ҳамаи ҳуқуқҳо ҳифз шудаанд.</p>
+    </footer>
+
+    <!-- Коди JavaScript мустақиман дар ҳамин ҷо -->
+    <script>
+    const translations = {
+        tj: {
+            modalWelcome: "Хуш омадед",
+            modalSelectLang: "Забони худро интихоб кунед",
+            heroTitle: "Расонидани бехатар ва тез ба тамоми гӯшаҳо!",
+            heroDesc: "Фармоиши худро сабт кунед ва система онро ба таври автоматикӣ ба курьер мерасонад.",
+            heroBtn: "Заказ кардан",
+            orderTitle: "Фармоиши нав",
+            lblName: "Ном ва насаб:",
+            lblPhone: "Рақами телефон:",
+            lblFrom: "Суроғаи гирифтан (Откуда):",
+            lblTo: "Суроғаи расонидан (Куда):",
+            lblDetails: "Навъи бор (Хӯрок, Техника, Либос...):",
+            btnSubmit: "Фиристодан ба курьер",
+            servicesTitle: "Чӣ чизҳоро расонида метавонем?",
+            s1Title: "1. Хӯрокворӣ",
+            s1Desc: "Хӯрок метавонед заказ карда, мо мерасонем.",
+            s2Title: "2. Техникаҳо",
+            s2Desc: "Фармоиши ҳама гуна таҷҳизот ва техника.",
+            s3Title: "3. Либос ва пойафзол",
+            s3Desc: "Либосу пойафзол ва дигар чизҳоро фармоиш диҳед, мо мерасонем.",
+            supportTitle: "Ба мушкилӣ дучор шудед?",
+            supportDesc: "Агар ҳангоми сабти фармоиш ё расонидани бор ба ягон мушкилӣ дучор шудед, фавран бо маркази дастгирии Kabut Express дар тамос шавед.",
+            btnCallText: "Занг: 100-126-826",
+            footerText: "© 2026 Kabut Express. Ҳамаи ҳуқуқҳо ҳифз шудаанд."
+        },
+        ru: {
+            modalWelcome: "Добро пожаловать",
+            modalSelectLang: "Выберите ваш язык",
+            heroTitle: "Безопасная и быстрая доставка во все уголки!",
+            heroDesc: "Оформите заказ, и система автоматически передаст его курьеру.",
+            heroBtn: "Заказать",
+            orderTitle: "Новый заказ",
+            lblName: "Имя и фамилия:",
+            lblPhone: "Номер телефона:",
+            lblFrom: "Адрес забора (Откуда):",
+            lblTo: "Адрес доставки (Куда):",
+            lblDetails: "Тип груза (Еда, Техника, Одежда...):",
+            btnSubmit: "Отправить курьеру",
+            servicesTitle: "Что мы можем доставить?",
+            s1Title: "1. Продукты и Еда",
+            s1Desc: "Вы можете заказать еду, и мы ее доставим.",
+            s2Title: "2. Техника",
+            s2Desc: "Заказ любого оборудования и техники.",
+            s3Title: "3. Одежда и обувь",
+            s3Desc: "Заказывайте одежду, обувь и другие вещи, мы доставим.",
+            supportTitle: "Возникли проблемы?",
+            supportDesc: "Если у вас возникли проблемы при оформлении заказа или доставке, немедленно свяжитесь с центром поддержки Kabut Express.",
+            btnCallText: "Звонок: 100-126-826",
+            footerText: "© 2026 Kabut Express. Все права защищены."
+        },
+        en: {
+            modalWelcome: "Welcome",
+            modalSelectLang: "Select your language",
+            heroTitle: "Safe and fast delivery everywhere!",
+            heroDesc: "Place your order, and the system will automatically dispatch it to a courier.",
+            heroBtn: "Order Now",
+            orderTitle: "New Order",
+            lblName: "Full Name:",
+            lblPhone: "Phone Number:",
+            lblFrom: "Pickup Address (From):",
+            lblTo: "Delivery Address (To):",
+            lblDetails: "Cargo Details (Food, Tech, Clothes...):",
+            btnSubmit: "Send to Courier",
+            servicesTitle: "What can we deliver?",
+            s1Title: "1. Food & Groceries",
+            s1Desc: "You can order food and we will deliver it.",
+            s2Title: "2. Electronics",
+            s2Desc: "Order any equipment and technology.",
+            s3Title: "3. Clothes & Shoes",
+            s3Desc: "Order clothes, shoes and other items, we will deliver.",
+            supportTitle: "Having trouble?",
+            supportDesc: "If you encounter any problems during ordering or delivery, immediately contact the Kabut Express support center.",
+            btnCallText: "Call: 100-126-826",
+            footerText: "© 2026 Kabut Express. All rights reserved."
+        }
+    };
+
+    function changeLanguage(lang) {
+        localStorage.setItem('selectedLanguage', lang);
+
+        const flagImg = document.getElementById('current-flag');
+        if (flagImg) {
+            if (lang === 'tj') flagImg.src = 'https://flagcdn.com/w40/tj.png';
+            if (lang === 'ru') flagImg.src = 'https://flagcdn.com/w40/ru.png';
+            if (lang === 'en') flagImg.src = 'https://flagcdn.com/w40/gb.png';
+        }
+
+        const switcher = document.getElementById('lang-switcher');
+        if (switcher) switcher.value = lang;
+
+        const t = translations[lang] || translations.tj;
+
+        if (document.getElementById('modal-welcome')) document.getElementById('modal-welcome').innerText = t.modalWelcome;
+        if (document.getElementById('modal-select-lang')) document.getElementById('modal-select-lang').innerText = t.modalSelectLang;
+        if (document.getElementById('hero-title')) document.getElementById('hero-title').innerText = t.heroTitle;
+        if (document.getElementById('hero-desc')) document.getElementById('hero-desc').innerText = t.heroDesc;
+        if (document.getElementById('btn-hero-order')) document.getElementById('btn-hero-order').innerText = t.heroBtn;
+        if (document.getElementById('order-title')) document.getElementById('order-title').innerText = t.orderTitle;
+        if (document.getElementById('lbl-name')) document.getElementById('lbl-name').innerText = t.lblName;
+        if (document.getElementById('lbl-phone')) document.getElementById('lbl-phone').innerText = t.lblPhone;
+        if (document.getElementById('lbl-address-from')) document.getElementById('lbl-address-from').innerText = t.lblFrom;
+        if (document.getElementById('lbl-address-to')) document.getElementById('lbl-address-to').innerText = t.lblTo;
+        if (document.getElementById('lbl-details')) document.getElementById('lbl-details').innerText = t.lblDetails;
+        if (document.getElementById('btn-submit')) document.getElementById('btn-submit').innerText = t.btnSubmit;
+        if (document.getElementById('services-title')) document.getElementById('services-title').innerText = t.servicesTitle;
+        if (document.getElementById('s1-title')) document.getElementById('s1-title').innerText = t.s1Title;
+        if (document.getElementById('s1-desc')) document.getElementById('s1-desc').innerText = t.s1Desc;
+        if (document.getElementById('s2-title')) document.getElementById('s2-title').innerText = t.s2Title;
+        if (document.getElementById('s2-desc')) document.getElementById('s2-desc').innerText = t.s2Desc;
+        if (document.getElementById('s3-title')) document.getElementById('s3-title').innerText = t.s3Title;
+        if (document.getElementById('s3-desc')) document.getElementById('s3-desc').innerText = t.s3Desc;
+        if (document.getElementById('support-title')) document.getElementById('support-title').innerText = t.supportTitle;
+        if (document.getElementById('support-desc')) document.getElementById('support-desc').innerText = t.supportDesc;
+        if (document.getElementById('btn-call-text')) document.getElementById('btn-call-text').innerText = t.btnCallText;
+        if (document.getElementById('footer-text')) document.getElementById('footer-text').innerText = t.footerText;
+    }
+
+    function closeLanguageModal(lang) {
+        changeLanguage(lang);
+        const modal = document.getElementById('language-modal');
+        if (modal) modal.style.display = 'none';
+    }
+
+    function openOrderModal() {
+        const modal = document.getElementById('order-modal');
+        if (modal) modal.style.display = 'flex';
+    }
+
+    function closeOrderModal() {
+        const modal = document.getElementById('order-modal');
+        if (modal) modal.style.display = 'none';
+    }
+
+document.addEventListener('DOMContentLoaded', () => {
+    const modal = document.getElementById('language-modal');
+    
+    // Ҳар бор ҳангоми ворид шудан модалро нишон медиҳем
+    if (modal) modal.style.display = 'flex';
+    
+    // Забони охиринро мегирем ё пешфарз Тоҷикиро мемонем
+    const savedLanguage = localStorage.getItem('selectedLanguage') || 'tj';
+    changeLanguage(savedLanguage);
+});
+
+    function handleOrder(event) {
+        event.preventDefault();
+        const name = document.getElementById('name').value;
+        const phone = document.getElementById('phone').value;
+        const from = document.getElementById('address-from').value;
+        const to = document.getElementById('address-to').value;
+
+        alert(`Фармоиши шумо қабул шуд!\n\nНом: ${name}\nТелефон: ${phone}\nАз: ${from}\nБа: ${to}`);
+
+        document.getElementById('order-form').reset();
+        closeOrderModal();
+    }
+    </script>
+</body>
+</html>
