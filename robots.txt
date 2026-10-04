@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://kabut4a-cell.github.io/zabi/sitemap.xml
